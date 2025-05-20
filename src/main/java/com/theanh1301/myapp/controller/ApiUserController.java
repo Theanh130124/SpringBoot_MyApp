@@ -2,6 +2,7 @@ package com.theanh1301.myapp.controller;
 
 
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
+import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,16 @@ public class ApiUserController {
     @GetMapping("/{userId}")
     public User getUserById(@PathVariable(value = "userId") String id){
         return userService.getUserById(id);
+    }
+
+    @PatchMapping("/{userId}")
+    public User updateUser(@PathVariable(value="userId") String id, @RequestBody UserUpdateRequest request){
+        return userService.updateUserById(id, request);
+    }
+
+    @DeleteMapping("/{userId}")
+    public String deleteUser(@PathVariable(value = "userId")  String id){
+        userService.deleteUserById(id);
+        return "Xóa thành công user với id:" + id ;
     }
 }

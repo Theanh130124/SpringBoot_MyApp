@@ -2,6 +2,7 @@ package com.theanh1301.myapp.service;
 
 
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
+import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,5 +36,18 @@ public class UserService {
 
     public User getUserById(String id){
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy User "));
+    }
+
+    public User updateUserById(String id, UserUpdateRequest request) {
+        User user = getUserById(id);
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setBirthday(request.getBirthday());
+        user.setPassword(request.getPassword());
+        return userRepository.save(user);
+    }
+
+    public void deleteUserById(String id){
+        userRepository.deleteById(id);
     }
 }
