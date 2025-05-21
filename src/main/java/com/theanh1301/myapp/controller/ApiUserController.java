@@ -1,6 +1,7 @@
 package com.theanh1301.myapp.controller;
 
 
+import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
@@ -19,12 +20,16 @@ public class ApiUserController {
     private UserService userService;
 
 
+
+
     //@Valid de validation theo rule ben dto
     @PostMapping
-    public User createUser(@RequestBody
+    public NormalizeApiResponse<User> createUser(@RequestBody
                                @Valid  UserCreationRequest request)
     {
-        return userService.createUser(request);
+        NormalizeApiResponse<User> apiResponse = new NormalizeApiResponse<>();
+         apiResponse.setResult(userService.createUser(request));
+         return apiResponse;
     }
 
     @GetMapping

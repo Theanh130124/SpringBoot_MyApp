@@ -4,6 +4,8 @@ package com.theanh1301.myapp.service;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
+import com.theanh1301.myapp.exception.AppException;
+import com.theanh1301.myapp.exception.ErrorCode;
 import com.theanh1301.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class UserService {
         User user = new User();
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username đã tồn tại");
+            throw new AppException(ErrorCode.USER_EXISTS);//quản lý bằng chính exception của mình
         }
         user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());
