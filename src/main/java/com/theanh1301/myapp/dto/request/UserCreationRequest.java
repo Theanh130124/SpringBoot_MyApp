@@ -1,9 +1,16 @@
 package com.theanh1301.myapp.dto.request;
 
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class UserCreationRequest {
+
+    @Size(min = 3, message = "Ten tai khoan khong duoc be hon 3 ky tu")
     private String username;
+//Dung validate
+    @Size(min = 8, message ="Password khong nho hon 8 ky tu")
     private String password;
     private String firstName;
     private String lastName;

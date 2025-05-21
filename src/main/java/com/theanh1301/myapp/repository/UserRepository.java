@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User,String> {
 
     //extends JPA đỡ phải viết persist , merge , remove
+    boolean existsByUsername(String username);//JPA tự viết
 
 }

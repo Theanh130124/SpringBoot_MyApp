@@ -5,6 +5,7 @@ import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,11 @@ public class ApiUserController {
     @Autowired
     private UserService userService;
 
+
+    //@Valid de validation theo rule ben dto
     @PostMapping
-    public User createUser(@RequestBody UserCreationRequest request)
+    public User createUser(@RequestBody
+                               @Valid  UserCreationRequest request)
     {
         return userService.createUser(request);
     }
