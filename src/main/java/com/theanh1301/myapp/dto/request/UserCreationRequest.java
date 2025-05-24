@@ -1,5 +1,6 @@
 package com.theanh1301.myapp.dto.request;
 
+import com.theanh1301.myapp.exception.ErrorCode;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 
@@ -7,10 +8,10 @@ import java.time.LocalDate;
 
 public class UserCreationRequest {
 
-    @Size(min = 3, message = "Ten tai khoan khong duoc be hon 3 ky tu")
+    @Size(min = 3, message = "USERNAME_INVALID")
     private String username;
 //Dung validate
-    @Size(min = 8, message ="Password khong nho hon 8 ky tu")
+    @Size(min = 8, message ="PASSWORD_INVALID")
     private String password;
     private String firstName;
     private String lastName;

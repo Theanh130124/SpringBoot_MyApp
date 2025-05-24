@@ -22,7 +22,7 @@ public class ApiUserController {
 
 
 
-    //@Valid de validation theo rule ben dto
+    //@Valid de validation theo rule ben dto.request
     @PostMapping
     public NormalizeApiResponse<User> createUser(@RequestBody
                                @Valid  UserCreationRequest request)
