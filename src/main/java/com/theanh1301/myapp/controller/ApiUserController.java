@@ -4,9 +4,14 @@ package com.theanh1301.myapp.controller;
 import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
+import com.theanh1301.myapp.dto.response.UserResponse;
 import com.theanh1301.myapp.entity.User;
+import com.theanh1301.myapp.mapper.UserMapper;
 import com.theanh1301.myapp.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true)
 public class ApiUserController {
 
-    @Autowired
-    private UserService userService;
+
+    UserService userService;
+
+
+    UserMapper userMapper;
 
 
 
@@ -38,12 +48,12 @@ public class ApiUserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable(value = "userId") String id){
+    public UserResponse getUserById(@PathVariable(value = "userId") String id){
         return userService.getUserById(id);
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable(value="userId") String id, @RequestBody UserUpdateRequest request){
+    public UserResponse updateUser(@PathVariable(value="userId") String id, @RequestBody UserUpdateRequest request){
         return userService.updateUserById(id, request);
     }
 
