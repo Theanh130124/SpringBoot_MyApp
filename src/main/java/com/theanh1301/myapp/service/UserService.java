@@ -6,6 +6,7 @@ import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
+import com.theanh1301.myapp.mapper.UserMapper;
 import com.theanh1301.myapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,22 +18,28 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public User createUser(UserCreationRequest request) {
-        User user = new User();
+
 
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTS);//quản lý bằng chính exception của mình
         }
 
 
-        UserCreationRequest request1 = new UserCreationRequest();
+        //Thay vì làm thủ công thì đã có mapstruct
+        User user = userMapper.toUser(request);
 
-        user.setUsername(request.getUsername());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setPassword(request.getPassword());
-        user.setBirthday(request.getBirthday());
-        user.setBirthday(request.getBirthday());
+
+
+//        user.setUsername(request.getUsername());
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
+//        user.setPassword(request.getPassword());
+//        user.setBirthday(request.getBirthday());
+//        user.setBirthday(request.getBirthday());
 
         userRepository.save(user);
         return user ;
@@ -50,10 +57,13 @@ public class UserService {
 
     public User updateUserById(String id, UserUpdateRequest request) {
         User user = getUserById(id);
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setBirthday(request.getBirthday());
-        user.setPassword(request.getPassword());
+
+
+        userMapper.updateUser(user,request);
+//        user.setFirstName(request.getFirstName());
+//        user.setLastName(request.getLastName());
+//        user.setBirthday(request.getBirthday());
+//        user.setPassword(request.getPassword());
         return userRepository.save(user);
     }
 

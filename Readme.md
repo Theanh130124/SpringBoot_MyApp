@@ -7,7 +7,7 @@ spring.jpa.hibernate.ddl-auto=update -> Tạo database từ pojo
 ###
 Nhớ lấy mapstruct lấy riêng trên maven 
 
-mapstruct - processor
+mapstruct - processor -> thêm ở cofi chứ không phải dependencies
 
 
 <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor -->
@@ -17,8 +17,16 @@ mapstruct - processor
     <version>1.6.3</version>
 </dependency>
 
+//Mapstruct core -> mapper dto.request vào pojo(entity) thay vì map thủ công 
 
-lombok-mapstruct-binding
+<!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+<dependency>
+    <groupId>org.mapstruct</groupId>
+    <artifactId>mapstruct</artifactId>
+    <version>1.6.3</version>
+</dependency>
+
+lombok-mapstruct-binding  -> thêm ở cofi chứ không phải dependencies
 
 <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding -->
 <dependency>
