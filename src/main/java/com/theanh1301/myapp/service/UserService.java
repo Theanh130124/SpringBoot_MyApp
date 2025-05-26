@@ -23,6 +23,10 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTS);//quản lý bằng chính exception của mình
         }
+
+
+        UserCreationRequest request1 = new UserCreationRequest();
+
         user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

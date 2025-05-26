@@ -9,7 +9,7 @@ public enum ErrorCode {
     USER_EXISTS(1001, "Tên tài khoản đã tồn tại"),
     //Phần validate trong dto
     USERNAME_INVALID(1003,"Tên tài khoản không được nhỏ hơn 3 ký tự"),
-    PASSWORD_INVALID(1004,"Mật khẩu không được nhỏ hơn 3 ký tự");
+    PASSWORD_INVALID(1004,"Mật khẩu không được nhỏ hơn 8 ký tự");
 
     private int code;
     private String message;

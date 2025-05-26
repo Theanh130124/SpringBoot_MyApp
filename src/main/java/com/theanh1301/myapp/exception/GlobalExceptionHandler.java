@@ -47,10 +47,6 @@ public class GlobalExceptionHandler {
         }catch (IllegalArgumentException e){
 
         }
-
-
-
-
         NormalizeApiResponse response = new NormalizeApiResponse();
         response.setCode(errorCode.getCode()); //code này là lỗi mình tự quy định
         response.setMessage(errorCode.getMessage());

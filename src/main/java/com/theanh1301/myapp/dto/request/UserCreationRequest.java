@@ -3,57 +3,41 @@ package com.theanh1301.myapp.dto.request;
 import com.theanh1301.myapp.exception.ErrorCode;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
+
+//lombok nó lấy getter và setter cho mọi biến là private
+@Data //của Lombok có sẳn getter setter contructor  toString hashCode......
+//@Getter
+//@Setter
+@Builder // thay thế tạo obj cho set
+@NoArgsConstructor // constructor không tham số  -> cần có vì @Data luôn tạo ra All tham số
+@AllArgsConstructor  //constructor có all tham số
+@FieldDefaults(level = AccessLevel.PRIVATE) // thay cho private
 public class UserCreationRequest {
 
     @Size(min = 3, message = "USERNAME_INVALID")
-    private String username;
+    String username;
 //Dung validate
     @Size(min = 8, message ="PASSWORD_INVALID")
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate birthday;
+    String password;
+    String firstName;
+    String lastName;
+    LocalDate birthday;
 
-    public String getUsername() {
-        return username;
-    }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    //Dùng Builder bên service
+    // Clean code
+// User user = User.builder()
+//                .username("theanh") // thay vì user.setUsername("theanh")
+//                .password("12345678")
+//                .build();
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
-    public String getFirstName() {
-        return firstName;
-    }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public LocalDate getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(LocalDate birthday) {
-        this.birthday = birthday;
-    }
 }
