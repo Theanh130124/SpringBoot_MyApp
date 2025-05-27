@@ -37,3 +37,10 @@ lombok-mapstruct-binding  -> thêm ở cofi chứ không phải dependencies
 
 //Bật pluglin lombok trong IDE 
 //Bật enable (Annotation processors)
+
+
+
+### 
+Không dùng Autowired dùng 
+@RequiredArgsConstructor // constructor final
+@FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true) // private final
