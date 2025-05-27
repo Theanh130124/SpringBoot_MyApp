@@ -24,10 +24,11 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public NormalizeApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-        boolean result = authenticationService.authenticate(request);
+        var result = authenticationService.authenticate(request);
+        //Xem đăng nhập thành công có message
         //<AuthenticationResponse>builder() -> tương đướng với setResult
         //AuthenticationResponse.builder().authenticated(result).build() -> tương đướng với 
-        return NormalizeApiResponse.<AuthenticationResponse>builder().result(AuthenticationResponse.builder().authenticated(result).build()).build();
+        return NormalizeApiResponse.<AuthenticationResponse>builder().result(result).build();
 
     }
 
