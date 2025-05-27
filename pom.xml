@@ -102,6 +102,12 @@
 			<artifactId>spring-security-oauth2-resource-server</artifactId>
 			<version>6.4.5</version>
 		</dependency>
+		<!-- Dung cho jwtDecode cho oauth2 cho jwt -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-oauth2-jose</artifactId>
+			<version>6.4.5</version>
+		</dependency>
 
 		<!-- Spring boot security  dung cho config-->
 
