@@ -3,9 +3,13 @@ package com.theanh1301.myapp.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.theanh1301.myapp.dto.request.AuthenticationRequest;
+import com.theanh1301.myapp.dto.request.IntrospectRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
+import com.theanh1301.myapp.dto.response.IntrospectResponse;
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
 import com.theanh1301.myapp.repository.UserRepository;
@@ -14,10 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -31,9 +38,24 @@ public class AuthenticationService {
 
     UserRepository userRepository;
 
-    //Nữa đặt chổ khác
+    //Nữa đặt chổ khác -> da dat trong application.properties
     @NonFinal // de lombok khong them final vao constructor
-    protected static final String SINGER_KEY = "KAr9UiUW5DtjBqUK+kfp4YpmCFdQGsp7U/OXR0N90/7HvaJOlFNou2sIpmq9Cg/d";
+    @Value("${jwt.signerKey}")
+    protected String SINGER_KEY;
+
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException , ParseException {
+        var token = request.getToken();
+        JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        //Token het han chua?
+        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var verifiedJWT = signedJWT.verify(verifier);
+
+        //Token con han va dung token
+        return IntrospectResponse.builder().valid(verifiedJWT && expityTime.after(new Date())).build();
+
+    }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
         //tìm user   ->
