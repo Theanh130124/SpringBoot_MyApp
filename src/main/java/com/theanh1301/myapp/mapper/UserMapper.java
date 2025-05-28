@@ -19,7 +19,7 @@ public interface UserMapper {
     //-> firstName = lastName
 //@Mapping( target = "lastName" , ignore = true ) -> ignore field lastName di -> bth lastName map vao lastName
     UserResponse toUserResponse(User user);
-    void updateUser(@MappingTarget User user, UserUpdateRequest request); //map request từng trường vào user được gán MappingTarget
+    void updateUser(@MappingTarget User user, UserUpdateRequest request); //map request từng trường trong request vào user(entity) được gán MappingTarget
     //Có thể xem logic annotation ở bên target -> mapper
 
 }

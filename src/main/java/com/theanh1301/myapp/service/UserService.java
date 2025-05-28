@@ -1,6 +1,7 @@
 package com.theanh1301.myapp.service;
 
 
+import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.dto.response.UserResponse;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor // thay cho autowride(tạo contructor cho mọi attribute final)
@@ -28,7 +30,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
 
-    public User createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
 
 
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -51,12 +53,15 @@ public class UserService {
 //        user.setBirthday(request.getBirthday());
 
         userRepository.save(user);
-        return user ;
+
+        return userMapper.toUserResponse(user);
 
     }
 
-    public List<User> getAllUser(){
-        return userRepository.findAll();
+    public List<UserResponse> getAllUser(){
+        return
+                userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList()); // userMapper::toUserResponse
+        //tương đướng với u -> userMapper.toUserResponse(u)
         //findAll() của thằng JPA -> Select * FROM User
     }
 

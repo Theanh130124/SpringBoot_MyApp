@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 
 //lombok nó lấy getter và setter cho mọi biến là private
@@ -27,6 +28,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
     LocalDate birthday;
+    Set<String> roles;
 
 
     //Dùng Builder bên service

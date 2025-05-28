@@ -34,16 +34,16 @@ public class ApiUserController {
 
     //@Valid de validation theo rule ben dto.request
     @PostMapping
-    public NormalizeApiResponse<User> createUser(@RequestBody
+    public NormalizeApiResponse<UserResponse> createUser(@RequestBody
                                @Valid  UserCreationRequest request)
     {
-        NormalizeApiResponse<User> apiResponse = new NormalizeApiResponse<>();
+        NormalizeApiResponse<UserResponse> apiResponse = new NormalizeApiResponse<>();
          apiResponse.setResult(userService.createUser(request));
          return apiResponse;
     }
 
     @GetMapping
-    public List<User> getUser(){
+    public List<UserResponse> getUser(){
         return userService.getAllUser();
     }
 

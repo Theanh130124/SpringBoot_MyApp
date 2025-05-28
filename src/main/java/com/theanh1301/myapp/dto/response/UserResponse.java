@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -14,10 +15,11 @@ import java.time.LocalDate;
 //Để service và controller trả về dto -> chú không trả về hết mội thông tin (pojo có)
 public class UserResponse {
 
-    private String id;
-    private String username;
-    private String password;
-    private String firstName;
-    private String lastName;
-    private LocalDate birthday;
+    String id;
+    String username;
+//    String password;  // khong tra ra password
+    String firstName;
+    String lastName;
+    LocalDate birthday;
+    Set<String> roles;
 }
