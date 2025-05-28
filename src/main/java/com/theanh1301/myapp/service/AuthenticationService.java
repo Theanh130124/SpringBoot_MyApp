@@ -10,6 +10,7 @@ import com.theanh1301.myapp.dto.request.AuthenticationRequest;
 import com.theanh1301.myapp.dto.request.IntrospectRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
+import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
 import com.theanh1301.myapp.repository.UserRepository;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
@@ -29,6 +31,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
@@ -43,7 +46,7 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SINGER_KEY;
 
-    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException , ParseException {
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
         JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -57,43 +60,52 @@ public class AuthenticationService {
 
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
+    public AuthenticationResponse authenticate(AuthenticationRequest request) {
         //tìm user   ->
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        boolean authenticated = passwordEncoder.matches(request.getPassword(),user.getPassword());// so sánh password
-        if(!authenticated){
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());// so sánh password
+        if (!authenticated) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
-        var token = generateToken(request.getUsername());
-
+        var token = generateToken(user);
 
 
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
-    private String generateToken(String username)
-    {
+
+    private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //builder payload
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)//user đăng nhập
+                .subject(user.getUsername())//user đăng nhập
                 .issuer("devtheanh.com") //token issuer từ ai
                 .issueTime(new Date()) // tg đăng đăng ký
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli())) // thời hạn token sau 1 giờ
-                .claim("customClaim","Custom")
+                .claim("scope", buildScope(user)) //thêm role vào -> SCOPE_ TÊN ROLE
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-        JWSObject jwsObject = new JWSObject(header,payload);
+        JWSObject jwsObject = new JWSObject(header, payload);
         //Ký token -> MACSigner() khóa ký và giải mã trùng nhau
 
-        try{jwsObject.sign(new MACSigner(SINGER_KEY.getBytes()));
+        try {
+            jwsObject.sign(new MACSigner(SINGER_KEY.getBytes()));
             return jwsObject.serialize();
-        }
-        catch (JOSEException e)
-        {
-            log.error("Không thể tạo token lỗi:"+ e);
+        } catch (JOSEException e) {
+            log.error("Không thể tạo token lỗi:" + e);
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" "); //ngăn cách nhau bởi dấu cách
+        if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
+
+            user.getRoles().forEach(stringJoiner::add);
+        return stringJoiner.toString();
+
+
+
     }
 }

@@ -6,6 +6,7 @@ import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.dto.response.UserResponse;
 import com.theanh1301.myapp.entity.User;
+import com.theanh1301.myapp.enums.Role;
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
 import com.theanh1301.myapp.mapper.UserMapper;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,7 @@ public class UserService {
     //Tạo contructor 2 tham số cho UserService -> không cần @Autowired
     UserRepository userRepository;
     UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -40,7 +43,6 @@ public class UserService {
 
         //Thay vì làm thủ công thì đã có mapstruct
         User user = userMapper.toUser(request);
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
 
@@ -51,6 +53,10 @@ public class UserService {
 //        user.setPassword(request.getPassword());
 //        user.setBirthday(request.getBirthday());
 //        user.setBirthday(request.getBirthday());
+        HashSet<String>  role = new HashSet<>();
+        role.add(Role.USER.name());
+        user.setRoles(role);
+
 
         userRepository.save(user);
 
