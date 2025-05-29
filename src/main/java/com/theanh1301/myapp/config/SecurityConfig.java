@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.J
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,6 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity // no dc enable san roi -> khong bat cung duoc
+@EnableMethodSecurity // phân quyền theo method -> bằng cách đặt annotation cho method đó @PreAuthorize
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/api/users", "/api/auth/login", "/api/auth/introspect"};
@@ -32,9 +34,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.
-                authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).
+                authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
 
-                        permitAll().requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ROLE_ADMIN") //oauth2 sẽ đọc SCOPE_
+//                        .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ROLE_ADMIN") //oauth2 sẽ đọc SCOPE_
                         .anyRequest().authenticated());
         //cung cap token hop le vao header(cai nay xu ly ktra)
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2

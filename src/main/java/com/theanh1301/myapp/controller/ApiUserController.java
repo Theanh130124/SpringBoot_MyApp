@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +47,11 @@ public class ApiUserController {
          return apiResponse;
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<UserResponse> getUser(){
+        log.info("Preauthorize chặn từ  đầu nếu như không có quyền luôn nên sẽ không thấy dòng này");
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("Username : {}", authentication.getName());
         authentication.getAuthorities().forEach(authority -> log.info(authority.getAuthority()));
@@ -54,8 +59,13 @@ public class ApiUserController {
         return userService.getAllUser();
     }
 
+//    @PostAuthorize("hasRole('ADMIN')")
+    //Chi lay duoc thong tin cua chinh minh
+    //returnObject.username (username la attribute cua UserResponse)
+    @PostAuthorize("returnObject.username == authentication.name")
     @GetMapping("/{userId}")
     public UserResponse getUserById(@PathVariable(value = "userId") String id){
+        log.info("Postauthorize chạy hết hàm rồi mới ktra quyền nên log này vẫn được in ra ");
         return userService.getUserById(id);
     }
 
