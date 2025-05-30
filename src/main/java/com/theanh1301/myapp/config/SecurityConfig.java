@@ -43,7 +43,8 @@ public class SecurityConfig {
                 .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())//set cái custom vào đây
 
-                        ));
+
+                        ).authenticationEntryPoint(new JwtAuthenticationEntryPoint()) ); // điều hướng hoặc in ra lỗi nếu đăng nhập fail
 
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

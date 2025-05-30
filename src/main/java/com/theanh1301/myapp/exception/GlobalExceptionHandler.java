@@ -2,7 +2,9 @@ package com.theanh1301.myapp.exception;
 
 
 import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,12 +17,14 @@ public class GlobalExceptionHandler {
     //Các exception không phải các loại đã bắt bên dưới
     @ExceptionHandler(value =Exception.class)
     public ResponseEntity<NormalizeApiResponse> handleException(Exception ex){
+
         NormalizeApiResponse response = new NormalizeApiResponse();
         response.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         response.setMessage(ex.getMessage());
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // STATUS mình tự fix
     }
 
+    //Exception trong GlobalException mình bắt
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<NormalizeApiResponse> handleAppException(AppException myexception){
 
@@ -28,11 +32,11 @@ public class GlobalExceptionHandler {
         NormalizeApiResponse response = new NormalizeApiResponse();
         response.setCode(errorCode.getCode()); //code này là lỗi mình tự quy định
         response.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(response);
+        return ResponseEntity.status(errorCode.getStatusCode()).body(response);
         //Sẽ in ra nhưng lỗi theo trong message của runtimeexception không cần
         //try catch
-
     }
+
 
     //Phần exception cho dto.request  ->MethodArgumentNotValidException do mình in ra trước khi có lỗi này nên
     //biet duoc la exception nay
@@ -51,6 +55,17 @@ public class GlobalExceptionHandler {
         response.setCode(errorCode.getCode()); //code này là lỗi mình tự quy định
         response.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(response); // lay mesaage tren vailidation
+    }
+
+
+    //Phần exception này là 403 cho cái api lấy tất cả người dùng -> admin chỉ có quyền (user sẽ bị 403
+    @ExceptionHandler(value= AccessDeniedException.class)
+    public ResponseEntity<NormalizeApiResponse> handleAccessDeniedException(AccessDeniedException exception){
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED; // lấy cái EnumError ra
+        NormalizeApiResponse response = new NormalizeApiResponse();
+        response.setCode(errorCode.getCode()); //code này là lỗi mình tự quy định
+        response.setMessage(errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getStatusCode()).body(response);
     }
 
 }
