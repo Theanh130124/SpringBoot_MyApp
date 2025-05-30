@@ -79,4 +79,19 @@ public class ApiUserController {
         userService.deleteUserById(id);
         return "Xóa thành công user với id:" + id ;
     }
+
+
+
+    //hoạc có thể thêm
+    @GetMapping("/current_user")
+    public NormalizeApiResponse<UserResponse> getCurrentUser(){
+        return NormalizeApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
+                .build();
+    }
+
+//    @GetMapping("/current_user")
+//    public UserResponse getCurrentUser(){
+//        return userService.getMyInfo();
+//    }
 }

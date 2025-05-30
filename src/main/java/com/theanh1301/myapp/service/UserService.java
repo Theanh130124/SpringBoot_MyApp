@@ -15,12 +15,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +64,15 @@ public class UserService {
 
         return userMapper.toUserResponse(user);
 
+    }
+
+    //Khi một user đăng nhập thì nó sẽ lưu thông tin trong SecurityContextHolder của SpringSecurity
+    public UserResponse getMyInfo(){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+        //Optional<User> nghĩa là giá trị trả về có thể là một User, hoặc không có gì (empty).
+        User user  =  userRepository.findByUsername(username).orElseThrow(() ->new AppException(ErrorCode.USER_NOT_EXISTS));
+        return userMapper.toUserResponse(user);
     }
 
     public List<UserResponse> getAllUser(){
