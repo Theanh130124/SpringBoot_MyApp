@@ -1,11 +1,10 @@
 package com.theanh1301.myapp.controller;
 
 
-import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.nimbusds.jose.JOSEException;
 import com.theanh1301.myapp.dto.request.AuthenticationRequest;
 import com.theanh1301.myapp.dto.request.IntrospectRequest;
-import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
+import com.theanh1301.myapp.dto.request.NormalizeApiRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
 import com.theanh1301.myapp.service.AuthenticationService;
@@ -29,20 +28,20 @@ public class AuthenticationController {
     private final RestClient.Builder builder;
 
     @PostMapping("/login")
-    public NormalizeApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+    public NormalizeApiRequest<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
         var result = authenticationService.authenticate(request);
         //Xem đăng nhập thành công có message
         //<AuthenticationResponse>builder() -> tương đướng với setResult
         //AuthenticationResponse.builder().authenticated(result).build() -> tương đướng với 
-        return NormalizeApiResponse.<AuthenticationResponse>builder().result(result).build();
+        return NormalizeApiRequest.<AuthenticationResponse>builder().result(result).build();
 
     }
     @PostMapping("/introspect")
-    public NormalizeApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
+    public NormalizeApiRequest<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request)
     throws ParseException , JOSEException {
 
         var res = authenticationService.introspect(request);
-        return NormalizeApiResponse.<IntrospectResponse>builder().result(res).build();
+        return NormalizeApiRequest.<IntrospectResponse>builder().result(res).build();
 
     }
 

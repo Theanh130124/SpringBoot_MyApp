@@ -1,5 +1,6 @@
 package com.theanh1301.myapp.dto.request;
 
+import com.theanh1301.myapp.entity.Role;
 import com.theanh1301.myapp.exception.ErrorCode;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
@@ -28,7 +29,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
     LocalDate birthday;
-    Set<String> roles;
+    Set<Role> roles;
 
 
     //Dùng Builder bên service

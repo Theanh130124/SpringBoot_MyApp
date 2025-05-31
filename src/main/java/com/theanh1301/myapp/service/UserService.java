@@ -1,7 +1,6 @@
 package com.theanh1301.myapp.service;
 
 
-import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
 import com.theanh1301.myapp.dto.response.UserResponse;
@@ -14,17 +13,18 @@ import com.theanh1301.myapp.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+
+@Slf4j  // tạo ra biến log
 @Service
 @RequiredArgsConstructor // thay cho autowride(tạo contructor cho mọi attribute final)
 @FieldDefaults(level = AccessLevel.PRIVATE ,makeFinal = true)// private final -> cho tất cả biến
@@ -57,7 +57,7 @@ public class UserService {
 //        user.setBirthday(request.getBirthday());
         HashSet<String>  role = new HashSet<>();
         role.add(Role.USER.name());
-        user.setRoles(role);
+//        user.setRoles(role);
 
 
         userRepository.save(user);

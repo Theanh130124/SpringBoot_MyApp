@@ -1,7 +1,7 @@
 package com.theanh1301.myapp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.theanh1301.myapp.dto.request.NormalizeApiResponse;
+import com.theanh1301.myapp.dto.request.NormalizeApiRequest;
 import com.theanh1301.myapp.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +21,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(errorCode.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        NormalizeApiResponse normalizeApiResponse = NormalizeApiResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build();
+        NormalizeApiRequest normalizeApiResponse = NormalizeApiRequest.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build();
 
         ObjectMapper mapper = new ObjectMapper();
         //viết nội dung vòa response

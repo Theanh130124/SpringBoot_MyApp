@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringJoiner;
 
-@Slf4j
+@Slf4j // tạo ra biến log
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
@@ -100,9 +100,9 @@ public class AuthenticationService {
 
     private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" "); //ngăn cách nhau bởi dấu cách
-        if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
+        //if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
 
-            user.getRoles().forEach(stringJoiner::add);
+            //user.getRoles().forEach(stringJoiner::add);
         return stringJoiner.toString();
 
 

@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NormalizeApiResponse<T> {
+public class NormalizeApiRequest<T> {
 
     int code = 1000; //1000 là thành công mình tự quy định trong tài liệu
     String message;

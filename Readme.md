@@ -44,3 +44,9 @@ lombok-mapstruct-binding  -> thêm ở cofi chứ không phải dependencies
 Không dùng Autowired dùng 
 @RequiredArgsConstructor // constructor final
 @FieldDefaults(level = AccessLevel.PRIVATE , makeFinal = true) // private final
+
+
+<h2>Grenated sql code </h2> 
+
+JPA Buddy 
+![img_1.png](img_1.png)

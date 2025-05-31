@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,String> {
+public interface UserRepository extends JpaRepository<User,String> { //Entity , (KieuDL khoa chinh)
 
     //extends JPA đỡ phải viết persist , merge , remove
     boolean existsByUsername(String username);//JPA tự viết

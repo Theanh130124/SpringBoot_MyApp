@@ -1,5 +1,6 @@
 package com.theanh1301.myapp.dto.response;
 
+import com.theanh1301.myapp.entity.Role;
 import jakarta.annotation.Nonnull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,5 +22,5 @@ public class UserResponse {
     String firstName;
     String lastName;
     LocalDate birthday;
-    Set<String> roles;
+    Set<Role> roles;
 }
