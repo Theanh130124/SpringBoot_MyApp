@@ -29,7 +29,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
     LocalDate birthday;
-    Set<Role> roles;
+    Set<String> roles;
 
 
     //Dùng Builder bên service

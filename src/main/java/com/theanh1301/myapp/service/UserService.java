@@ -1,14 +1,18 @@
 package com.theanh1301.myapp.service;
 
 
+import com.theanh1301.myapp.dto.request.RoleRequest;
 import com.theanh1301.myapp.dto.request.UserCreationRequest;
 import com.theanh1301.myapp.dto.request.UserUpdateRequest;
+import com.theanh1301.myapp.dto.response.RoleResponse;
 import com.theanh1301.myapp.dto.response.UserResponse;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.enums.Role;
+
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
 import com.theanh1301.myapp.mapper.UserMapper;
+import com.theanh1301.myapp.repository.RoleRepository;
 import com.theanh1301.myapp.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +38,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    RoleRepository roleRepository;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -91,10 +96,13 @@ public class UserService {
 
 
         userMapper.updateUser(user,request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 //        user.setFirstName(request.getFirstName());
 //        user.setLastName(request.getLastName());
 //        user.setBirthday(request.getBirthday());
 //        user.setPassword(request.getPassword());
+        var roles = roleRepository.findAllById(request.getRoles()); // TÌM ROLE THEO TÊN TRONG ENUM
+        user.setRoles(new HashSet<>(roles));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 

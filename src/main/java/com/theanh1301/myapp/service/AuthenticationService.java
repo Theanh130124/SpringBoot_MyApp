@@ -98,11 +98,17 @@ public class AuthenticationService {
         }
     }
 
+    //build cho scope của token(jwt) chúa role và permission  -> muốn xem scope lên service xem luôn (khoongg xem ở current_user đc
     private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" "); //ngăn cách nhau bởi dấu cách
-        //if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
+        if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
 
-            //user.getRoles().forEach(stringJoiner::add);
+            user.getRoles().forEach(role -> {
+                stringJoiner.add(role.getName());
+                //add cả permission detail(về sau mình đã sửa)
+                if(!CollectionUtils.isEmpty(role.getPermissions()))
+                    role.getPermissions().forEach(permission -> {stringJoiner.add(permission.getName());});
+            });
         return stringJoiner.toString();
 
 

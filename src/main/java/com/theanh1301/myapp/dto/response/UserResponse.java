@@ -21,6 +21,7 @@ public class UserResponse {
 //    String password;  // khong tra ra password
     String firstName;
     String lastName;
-    LocalDate birthday;
-    Set<Role> roles;
+
+    //Response là là Set<RoleResponse> nhưng request lại là Set<String> để có thể gửi key
+    Set<RoleResponse> roles;
 }
