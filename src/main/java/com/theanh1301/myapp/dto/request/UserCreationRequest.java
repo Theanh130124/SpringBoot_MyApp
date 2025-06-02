@@ -2,6 +2,7 @@ package com.theanh1301.myapp.dto.request;
 
 import com.theanh1301.myapp.entity.Role;
 import com.theanh1301.myapp.exception.ErrorCode;
+import com.theanh1301.myapp.validator.DobConstraint;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -28,6 +29,8 @@ public class UserCreationRequest {
     String password;
     String firstName;
     String lastName;
+
+    @DobConstraint(min=18) // -> tuổi tối thiểu 18
     LocalDate birthday;
     Set<String> roles;
 
