@@ -103,8 +103,9 @@ public class AuthenticationService {
         StringJoiner stringJoiner = new StringJoiner(" "); //ngăn cách nhau bởi dấu cách
         if (!CollectionUtils.isEmpty(user.getRoles())) // Không empty -> lấy role ra
 
+            //Mình thêm tiền tố ROLE_ và permission mình để trống (để dễ phân biệt)
             user.getRoles().forEach(role -> {
-                stringJoiner.add(role.getName());
+                stringJoiner.add("ROLE_"+role.getName());
                 //add cả permission detail(về sau mình đã sửa)
                 if(!CollectionUtils.isEmpty(role.getPermissions()))
                     role.getPermissions().forEach(permission -> {stringJoiner.add(permission.getName());});

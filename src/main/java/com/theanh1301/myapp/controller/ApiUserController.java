@@ -46,7 +46,10 @@ public class ApiUserController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
+    //Có thể kiểm tra quyền permission luôn
+//    @PreAuthorize("hasRole('ADMIN')") // do mình có thêm tiền tố ROLE_
+    @PreAuthorize("hasAuthority('UPDATE_DATA')") // nên permission mình dùng asAuthority() để map chính xác
     @GetMapping
     public List<UserResponse> getUser(){
         log.info("Preauthorize chặn từ  đầu nếu như không có quyền luôn nên sẽ không thấy dòng này");
