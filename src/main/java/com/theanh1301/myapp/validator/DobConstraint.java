@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 //@Repeatable(List.class)  // không dùng
 //@Documented  //không dùng
 @Constraint(
-        validatedBy = {}
+        validatedBy = {DobValidator.class}
 ) //class chịu trách nhiệm validate cho annotation này -> lớp xử lý logic cho validator này
 public @interface DobConstraint {
 

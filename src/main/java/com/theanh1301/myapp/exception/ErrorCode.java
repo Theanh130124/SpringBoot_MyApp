@@ -15,7 +15,9 @@ public enum ErrorCode {
     PASSWORD_INVALID(1004,"Mật khẩu không được nhỏ hơn 8 ký tự",HttpStatus.BAD_REQUEST),
     USER_NOT_EXISTS(1005,"User không tồn tại",HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006,"Không đăng nhập thành công",HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1006,"Không có quyền thực hiện",HttpStatus.FORBIDDEN);
+    UNAUTHORIZED(1006,"Không có quyền thực hiện",HttpStatus.FORBIDDEN),
+    INVALID_DOB(1007 ,"Lỗi liên quan đến ngày sinh",HttpStatus.BAD_REQUEST);
+
     private int code;
     private String message;
     private HttpStatusCode statusCode;

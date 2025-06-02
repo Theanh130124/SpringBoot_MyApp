@@ -21,7 +21,7 @@ import java.util.Set;
 @AllArgsConstructor  //constructor có all tham số
 @FieldDefaults(level = AccessLevel.PRIVATE) // thay cho private
 public class UserCreationRequest {
-
+    //message = "tên của Error code"
     @Size(min = 3, message = "USERNAME_INVALID")
     String username;
 //Dung validate
@@ -30,7 +30,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
 
-    @DobConstraint(min=18) // -> tuổi tối thiểu 18
+    @DobConstraint(min=18 , message = "INVALID_DOB") // -> tuổi tối thiểu 18,  nhớ phải có ErrorCode riêng cho nó
     LocalDate birthday;
     Set<String> roles;
 
