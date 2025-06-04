@@ -4,6 +4,7 @@ package com.theanh1301.myapp.controller;
 import com.nimbusds.jose.JOSEException;
 import com.theanh1301.myapp.dto.request.AuthenticationRequest;
 import com.theanh1301.myapp.dto.request.IntrospectRequest;
+import com.theanh1301.myapp.dto.request.LogoutRequest;
 import com.theanh1301.myapp.dto.request.NormalizeApiRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
@@ -23,7 +24,7 @@ import java.text.ParseException;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level =  AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationController {
+public class ApiAuthenticationController {
     AuthenticationService authenticationService;
     private final RestClient.Builder builder;
 
@@ -42,6 +43,14 @@ public class AuthenticationController {
 
         var res = authenticationService.introspect(request);
         return NormalizeApiRequest.<IntrospectResponse>builder().result(res).build();
+
+    }
+    @PostMapping("/logout")
+    public NormalizeApiRequest<Void> logout(@RequestBody LogoutRequest request)
+            throws ParseException , JOSEException {
+
+        authenticationService.logout(request);
+        return NormalizeApiRequest.<Void>builder().build();
 
     }
 

@@ -8,11 +8,14 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.theanh1301.myapp.dto.request.AuthenticationRequest;
 import com.theanh1301.myapp.dto.request.IntrospectRequest;
+import com.theanh1301.myapp.dto.request.LogoutRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
+import com.theanh1301.myapp.entity.InvalidatedToken;
 import com.theanh1301.myapp.entity.User;
 import com.theanh1301.myapp.exception.AppException;
 import com.theanh1301.myapp.exception.ErrorCode;
+import com.theanh1301.myapp.repository.InvalidatedTokenRepository;
 import com.theanh1301.myapp.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Slf4j // tạo ra biến log
 @Service
@@ -39,7 +40,9 @@ import java.util.StringJoiner;
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
 public class AuthenticationService {
 
+    //UUID chuổi 32 kí tự ngẫu nhiên -> random global luôn
     UserRepository userRepository;
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     //Nữa đặt chổ khác -> da dat trong application.properties
     @NonFinal // de lombok khong them final vao constructor
@@ -48,15 +51,15 @@ public class AuthenticationService {
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
-        JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
-        SignedJWT signedJWT = SignedJWT.parse(token);
+        try {
+            verifyToken(token); // mình đã tách hàm
 
-        //Token het han chua?
-        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        var verifiedJWT = signedJWT.verify(verifier);
-
-        //Token con han va dung token
-        return IntrospectResponse.builder().valid(verifiedJWT && expityTime.after(new Date())).build();
+        }catch (AppException e){
+            //Do dưới kia nếu logout rồi mà cố đăng nhập lại thì mình in ra AppException rồi
+            //nên duyệt false luôn
+            return IntrospectResponse.builder().valid(false).build();
+        }
+        return IntrospectResponse.builder().valid(true).build();
 
     }
 
@@ -83,6 +86,7 @@ public class AuthenticationService {
                 .issueTime(new Date()) // tg đăng đăng ký
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli())) // thời hạn token sau 1 giờ
                 .claim("scope", buildScope(user)) //thêm role vào -> SCOPE_ TÊN ROLE
+                .jwtID(UUID.randomUUID().toString()) // xử lý logout token
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -114,5 +118,36 @@ public class AuthenticationService {
 
 
 
+    }
+
+    public void logout(LogoutRequest request) throws JOSEException ,ParseException {
+        var signToken = verifyToken(request.getToken());
+        //lấy jwtTokenID
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+        InvalidatedToken invalidatedToken =  InvalidatedToken.builder()
+                .id(jit).expiryTime(expiryTime).build();
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+    //private mình viết mấy hàm dùng chung cho class này(để private vì chỉ để mấy thằng này dùng
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        //Token het han chua?
+        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var verifiedJWT = signedJWT.verify(verifier);
+        //không đúng chữ ký  hoăc hết hạn
+        if(!verifiedJWT && expityTime.after(new Date())){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+        //nếu logout rồi thì đã có id trong bảng invalid -> thì lúc đó token sẽ đc mình quy định
+        //như xóa đi rồi (nên 401 không dùng token đó nữa)
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        return signedJWT;
     }
 }
