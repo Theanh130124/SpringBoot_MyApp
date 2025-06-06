@@ -39,7 +39,8 @@ public class CustomJwtDecoder implements JwtDecoder {
             //Check token nay con hieu luc khong (Hoac chua logout)
            var response =  authenticationService.introspect(IntrospectRequest.builder().token(token).build());
            if(!response.isValid()){ //response.isValid() tra ra true neu token hop le
-               throw new JwtException("Invalid token");
+               throw new JwtException("Token khong hop le ");
+
            }
         }catch (JOSEException | ParseException e){
             throw new JwtException(e.getMessage());

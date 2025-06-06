@@ -9,6 +9,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.theanh1301.myapp.dto.request.AuthenticationRequest;
 import com.theanh1301.myapp.dto.request.IntrospectRequest;
 import com.theanh1301.myapp.dto.request.LogoutRequest;
+import com.theanh1301.myapp.dto.request.RefreshTokenRequest;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
 import com.theanh1301.myapp.entity.InvalidatedToken;
@@ -49,6 +50,7 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SINGER_KEY;
 
+    //Ktra trang thai su dung cua token
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
         try {
@@ -62,6 +64,7 @@ public class AuthenticationService {
         return IntrospectResponse.builder().valid(true).build();
 
     }
+    //dang nhap tạo token
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         //tìm user   ->
@@ -77,6 +80,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
 
+    //Tao token cua jwt
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         //builder payload
@@ -129,7 +133,9 @@ public class AuthenticationService {
                 .id(jit).expiryTime(expiryTime).build();
         invalidatedTokenRepository.save(invalidatedToken);
     }
-    //private mình viết mấy hàm dùng chung cho class này(để private vì chỉ để mấy thằng này dùng
+    //private mình viết mấy hàm dùng chung cho class này(để private vì chỉ để mấy thằng này dùng)
+
+    //Co che ktra token duoc kha dung khong( neu het han , khong dung , co trong bang invalidatedToken(do logout hoac refresh )
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
@@ -149,5 +155,27 @@ public class AuthenticationService {
         }
 
         return signedJWT;
+    }
+
+    //do no cung tra ve token va boolean kia nen minh dung AuthenticationResponse luon
+    public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws JOSEException, ParseException {
+        //Kiem tra token
+        var singedJWT = verifyToken(request.getToken()); // Ktra kha dung cua token  ( neu het han , khong dung , co trong bang invalidatedToken(do logout hoac refresh ) xem chi tiet o tren
+        String jit = singedJWT.getJWTClaimsSet().getJWTID();
+        Date expiryTime = singedJWT.getJWTClaimsSet().getExpirationTime();
+
+        //Luu vao invalid token -> de vo hieu luc token nay
+        InvalidatedToken invalidatedToken =  InvalidatedToken.builder()
+                .id(jit).expiryTime(expiryTime).build();
+        invalidatedTokenRepository.save(invalidatedToken);
+
+
+        //Tao token moi dua vua username ( khong can password )
+        var username = singedJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+        var token = generateToken(user);
+
+
+        return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
 }

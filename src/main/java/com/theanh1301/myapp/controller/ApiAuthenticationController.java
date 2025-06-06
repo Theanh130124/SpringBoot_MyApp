@@ -2,10 +2,7 @@ package com.theanh1301.myapp.controller;
 
 
 import com.nimbusds.jose.JOSEException;
-import com.theanh1301.myapp.dto.request.AuthenticationRequest;
-import com.theanh1301.myapp.dto.request.IntrospectRequest;
-import com.theanh1301.myapp.dto.request.LogoutRequest;
-import com.theanh1301.myapp.dto.request.NormalizeApiRequest;
+import com.theanh1301.myapp.dto.request.*;
 import com.theanh1301.myapp.dto.response.AuthenticationResponse;
 import com.theanh1301.myapp.dto.response.IntrospectResponse;
 import com.theanh1301.myapp.service.AuthenticationService;
@@ -51,6 +48,16 @@ public class ApiAuthenticationController {
 
         authenticationService.logout(request);
         return NormalizeApiRequest.<Void>builder().build();
+
+    }
+
+    @PostMapping("/refresh")
+    public NormalizeApiRequest<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        //Xem đăng nhập thành công có message
+        //<AuthenticationResponse>builder() -> tương đướng với setResult
+        //AuthenticationResponse.builder().authenticated(result).build() -> tương đướng với
+        return NormalizeApiRequest.<AuthenticationResponse>builder().result(result).build();
 
     }
 

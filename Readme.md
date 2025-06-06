@@ -50,3 +50,7 @@ Không dùng Autowired dùng
 
 JPA Buddy 
 ![img_1.png](img_1.png)
+
+
+
+#Refesh token -> de luu trang thai dang nhap (vi token co the het han) -> tang than thien voi nguoi dung

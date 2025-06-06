@@ -27,7 +27,8 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity // phân quyền theo method -> bằng cách đặt annotation cho method đó @PreAuthorize
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/api/users", "/api/auth/login","/api/auth/logout",  "/api/auth/introspect"};
+    private final String[] PUBLIC_ENDPOINTS = {"/api/users", "/api/auth/login","/api/auth/logout",  "/api/auth/introspect"
+    ,"/api/auth/refresh"};
 
     @Value("${jwt.signerKey}")
     private String jwtSignerKey;
