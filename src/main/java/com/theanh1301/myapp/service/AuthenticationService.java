@@ -50,11 +50,21 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SINGER_KEY;
 
+    @NonFinal
+    @Value("${jwt.expired}")
+    protected  long EXPIRED_TOKEN;
+
+    @NonFinal
+    @Value("${jwt.refreshabled}")
+    protected  long REFRESHED_TOKEN;
+
+
+
     //Ktra trang thai su dung cua token
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
         try {
-            verifyToken(token); // mình đã tách hàm
+            verifyToken(token,false); // mình đã tách hàm
 
         }catch (AppException e){
             //Do dưới kia nếu logout rồi mà cố đăng nhập lại thì mình in ra AppException rồi
@@ -65,7 +75,6 @@ public class AuthenticationService {
 
     }
     //dang nhap tạo token
-
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         //tìm user   ->
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
@@ -79,7 +88,6 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
-
     //Tao token cua jwt
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
@@ -88,7 +96,7 @@ public class AuthenticationService {
                 .subject(user.getUsername())//user đăng nhập
                 .issuer("devtheanh.com") //token issuer từ ai
                 .issueTime(new Date()) // tg đăng đăng ký
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli())) // thời hạn token sau 1 giờ
+                .expirationTime(new Date(Instant.now().plus(EXPIRED_TOKEN, ChronoUnit.MINUTES).toEpochMilli())) // thời hạn token sau 1 giờ  -> trong kia 60 nên minnh chỉnh về phút
                 .claim("scope", buildScope(user)) //thêm role vào -> SCOPE_ TÊN ROLE
                 .jwtID(UUID.randomUUID().toString()) // xử lý logout token
                 .build();
@@ -96,7 +104,6 @@ public class AuthenticationService {
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
         JWSObject jwsObject = new JWSObject(header, payload);
         //Ký token -> MACSigner() khóa ký và giải mã trùng nhau
-
         try {
             jwsObject.sign(new MACSigner(SINGER_KEY.getBytes()));
             return jwsObject.serialize();
@@ -105,7 +112,6 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
-
     //build cho scope của token(jwt) chúa role và permission  -> muốn xem scope lên service xem luôn (khoongg xem ở current_user đc
     private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" "); //ngăn cách nhau bởi dấu cách
@@ -119,30 +125,36 @@ public class AuthenticationService {
                     role.getPermissions().forEach(permission -> {stringJoiner.add(permission.getName());});
             });
         return stringJoiner.toString();
-
-
-
     }
 
     public void logout(LogoutRequest request) throws JOSEException ,ParseException {
-        var signToken = verifyToken(request.getToken());
-        //lấy jwtTokenID
-        String jit = signToken.getJWTClaimsSet().getJWTID();
-        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-        InvalidatedToken invalidatedToken =  InvalidatedToken.builder()
-                .id(jit).expiryTime(expiryTime).build();
-        invalidatedTokenRepository.save(invalidatedToken);
+        try {
+            var signToken = verifyToken(request.getToken(), true);
+            //lấy jwtTokenID
+            String jit = signToken.getJWTClaimsSet().getJWTID();
+            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+            InvalidatedToken invalidatedToken =  InvalidatedToken.builder()
+                    .id(jit).expiryTime(expiryTime).build();
+            invalidatedTokenRepository.save(invalidatedToken);
+        }catch (AppException e){
+            log.info("Token trong logout có lỗi");
+        }
+
+
+
     }
     //private mình viết mấy hàm dùng chung cho class này(để private vì chỉ để mấy thằng này dùng)
 
     //Co che ktra token duoc kha dung khong( neu het han , khong dung , co trong bang invalidatedToken(do logout hoac refresh )
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token,boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SINGER_KEY.getBytes());
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        //Token het han chua?
-        Date expityTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        //Token het han chua?  -> nếu dùng cho refresh thì dùng tg của refresh (tg từ luc tạo token + 120p mình quy định bên application.properties)
+        Date expityTime = (isRefresh) ? new Date(signedJWT.getJWTClaimsSet().getIssueTime().toInstant()
+                .plus(REFRESHED_TOKEN,ChronoUnit.MINUTES).toEpochMilli())
+        : signedJWT.getJWTClaimsSet().getExpirationTime();
         var verifiedJWT = signedJWT.verify(verifier);
         //không đúng chữ ký  hoăc hết hạn
         if(!verifiedJWT && expityTime.after(new Date())){
@@ -160,7 +172,7 @@ public class AuthenticationService {
     //do no cung tra ve token va boolean kia nen minh dung AuthenticationResponse luon
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws JOSEException, ParseException {
         //Kiem tra token
-        var singedJWT = verifyToken(request.getToken()); // Ktra kha dung cua token  ( neu het han , khong dung , co trong bang invalidatedToken(do logout hoac refresh ) xem chi tiet o tren
+        var singedJWT = verifyToken(request.getToken(), true); // Ktra kha dung cua token  ( neu het han , khong dung , co trong bang invalidatedToken(do logout hoac refresh ) xem chi tiet o tren
         String jit = singedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = singedJWT.getJWTClaimsSet().getExpirationTime();
 

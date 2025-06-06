@@ -54,3 +54,5 @@ JPA Buddy
 
 
 #Refesh token -> de luu trang thai dang nhap (vi token co the het han) -> tang than thien voi nguoi dung
+
+![img_2.png](img_2.png)
