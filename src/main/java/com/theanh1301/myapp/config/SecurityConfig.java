@@ -1,5 +1,6 @@
 package com.theanh1301.myapp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.JwkSetUriJwtDecoderBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,11 @@ public class SecurityConfig {
     @Value("${jwt.signerKey}")
     private String jwtSignerKey;
 
+
+
+    @Autowired
+    private CustomJwtDecoder customJwtDecoder;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.
@@ -40,7 +46,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
         //cung cap token hop le vao header(cai nay xu ly ktra)
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                .jwt(jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)   //decoder de giai ma token (cho logout mk da custom)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())//set cái custom vào đây
 
 
