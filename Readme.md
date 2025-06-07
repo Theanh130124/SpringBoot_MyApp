@@ -56,3 +56,51 @@ JPA Buddy
 #Refesh token -> de luu trang thai dang nhap (vi token co the het han) -> tang than thien voi nguoi dung
 
 ![img_2.png](img_2.png)
+
+
+
+#Build thu cong (build bang java) 
+```
+java --version
+
+-truoc do phai ./mvnw clean -> de  xoa target
+
+./mvnw package -DskipTests -> tao ra file .jar  0.0.1.SNAPSHOT la phien ban
+
+```
+- mo cmd chua file jar :  java -jar .\ten file jar -> spring boot da chay Ctrl C de tat
+- co the dem file jar qua may khac chay binh thuong
+
+#Build bang maven (cai apache maven)
+
+```
+- mvn --version
+- mvn clean
+- mvn package -DskipTests
+```
+
+
+#Build voi docker
+
+
+Docker desktop 
+
+
+-> build Image -> thành container
+-Vào 1 container
+-vao exec 
+```
+pwd -> ktra thư mục đang đứng
+cd / -> về thư mục gốc
+ls -la -> ktra các thư mực 
+cat /etc/os-release  -> in toàn bộ thông tin của container
+
+```
+-lúc build docker mình đã xóa application-prod.properties vì chứa utf-8 
+
+#Tiến hành build docker ở thư mục hiện tại (Open docker desktop) - luôn phải clean target trc
+
+```
+docker build -t myapp:0.0.1 .  (myapp = name app)
+docker run -d myapp:0.0.1
+```
